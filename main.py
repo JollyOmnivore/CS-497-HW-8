@@ -84,8 +84,19 @@ active = tf.keras.layers.Dense(1, activation='relu')
 
 #run data through layer to reduce the array z dim to 1, and strip dimension
 #this leaves us with an array 101x20
+
+def not_my_tf_round(x, decimals = 0):
+    multiplier = tf.constant(10**decimals, dtype=x.dtype)
+    return tf.round(x * multiplier) / multiplier
+# Hey for this function I had to loked up an alternative to the tf.math.round() function that have a precision value here is were I got it 
+# https://stackoverflow.com/questions/46688610/tf-round-to-a-specified-precision
 wordEncArr = active(oneHotSentences)
+#wordEncArr = round(wordEncArr, 4)
+wordEncArr = not_my_tf_round(wordEncArr, 4)
+
+
 wordEncArr = tf.squeeze(wordEncArr, axis=-1)
+print("wordEncArr HERE")
 print(wordEncArr)
 
 #Now that we have the word encoded values, we need possition encoding
@@ -108,8 +119,12 @@ f = open("output_embedding.txt", "w")
 
 
 for arr in encodedArr:
-    print(arr)
-
+    for val in arr:
+        val = round(val,3)
+        print(val)
+        f.write(str(val))
+        f.write(" ")
+f.close()
 #Still needs to be done:
 #	+Floats need to be between 0-1 (tbd)
 #	+Floats must be 4 digits of precision for the word encoding (onehot)
